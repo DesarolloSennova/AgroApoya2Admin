@@ -70,6 +70,10 @@ export class ManychatComponent implements OnInit {
     if (this.DataQuery.length > 0) {
       for (var i = 0; i < this.DataQuery.length; i++) {
         this.Loader = true;
+        //Asigna url
+        const resulturl = await this.Asignaurl(this.DataQuery[i].MSJ_AGROAMIGO, this.DataQuery[i].ID_MANYCHAT, this.DataQuery[i].ComplementoLink);
+        await new Promise(resolve => setTimeout(resolve, 5000));//Hace esperar 5 segundos para ejecutar el siguiente servicio
+
         //Envio descripcion
         const result1 = await this.AsignaMsmWhatsap(this.DataQuery[i].MSJ_AGROAMIGO, this.DataQuery[i].ID_MANYCHAT);
         await new Promise(resolve => setTimeout(resolve, 5000));//Hace esperar 5 segundos para ejecutar el siguiente servicio
@@ -97,11 +101,24 @@ export class ManychatComponent implements OnInit {
   }
 
 
-
+  async Asignaurl(Descripcion: string, IdMenyChat: string, ComplementoLink: string) {
+    await new Promise((resolve, reject) => {
+      const body = {
+        subscriber_id: 20658301,
+        field_id: 9748949,
+        field_value: 'ofertasExternas'
+      }
+      this.publicidadService.AsignarCampoUserManyChat(body).subscribe(async ResultadoDesc => {
+        this.RespuDescripcion = JSON.stringify(ResultadoDesc);
+        resolve(true);
+      });
+    });
+  }
+  
   async AsignaMsmWhatsap(Descripcion: string, IdMenyChat: string) {
     await new Promise((resolve, reject) => {
       const body = {
-        subscriber_id: IdMenyChat,
+        subscriber_id: 20658301,
         field_id: 9712873,
         field_value: Descripcion
       }
@@ -115,8 +132,8 @@ export class ManychatComponent implements OnInit {
   async EnviaPlantilla(IdMenyChat: string) {
     await new Promise((resolve, reject) => {
       const body = {
-        subscriber_id: IdMenyChat,
-        flow_ns: "content20230823141219_050777"
+        subscriber_id: 20658301,
+        flow_ns: "content20230831133343_018142"
       }
       this.publicidadService.CManyChatFlows(body).subscribe(async Respu => {
         this.RespuePlantilla = JSON.stringify(Respu);
